@@ -19,13 +19,11 @@ export default class RichTextEditor extends Component {
     autoCapitalize: 'off',
     defaultParagraphSeparator: 'div',
     editorInitializedCallback: () => {},
-    initialHeight: 0,
   };
 
   constructor(props) {
     super(props);
     let that = this;
-    that.renderWebView = that.renderWebView.bind(that);
     that.onMessage = that.onMessage.bind(that);
     that.sendAction = that.sendAction.bind(that);
     that.registerToolbar = that.registerToolbar.bind(that);
@@ -33,7 +31,6 @@ export default class RichTextEditor extends Component {
     that._onKeyboardWillHide = that._onKeyboardWillHide.bind(that);
     that.init = that.init.bind(that);
     that.setRef = that.setRef.bind(that);
-    that.onViewLayout = that.onViewLayout.bind(that);
     that.unmount = false;
     that._keyOpen = false;
     that._focus = false;
@@ -258,7 +255,7 @@ export default class RichTextEditor extends Component {
       <>
         <WebView
           useWebKit={true}
-          scrollEnabled={false}
+          scrollEnabled={true}
           hideKeyboardAccessoryView={true}
           keyboardDisplayRequiresUserAction={false}
           nestedScrollEnabled={!useContainer}
@@ -282,30 +279,14 @@ export default class RichTextEditor extends Component {
             return true;
           }}
         />
-        {Platform.OS === 'android' && <TextInput ref={ref => (that._input = ref)} style={styles._input} />}
+      <TextInput ref={ref => (that._input = ref)} style={styles._input} />
       </>
     );
   }
 
-  onViewLayout({nativeEvent: {layout}}) {
-    // const {x, y, width, height} = layout;
-    this.layout = layout;
-  }
-
   render() {
-    let {height} = this.state;
 
-    // useContainer is an optional prop with default value of true
-    // If set to true, it will use a View wrapper with styles and height.
-    // If set to false, it will not use a View wrapper
-    const {useContainer, style} = this.props;
-    return useContainer ? (
-      <View style={[style, {height}]} onLayout={this.onViewLayout}>
-        {this.renderWebView()}
-      </View>
-    ) : (
-      this.renderWebView()
-    );
+    return this.renderWebView()
   }
 
   //-------------------------------------------------------------------------------
